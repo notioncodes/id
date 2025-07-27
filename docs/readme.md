@@ -51,3 +51,26 @@ func main() {
  fmt.Println(parsed)
 }
 ```
+
+## Performance
+
+To run the benchmarks, run the following command:
+
+```bash
+go test -bench=. -benchmem
+```
+
+## Benchmark Results
+
+```bash
+goos: darwin
+goarch: arm64
+pkg: github.com/notioncodes/id
+cpu: Apple M1 Max
+BenchmarkValid/WithCache-10             130095438                9.194 ns/op           0 B/op          0 allocs/op
+BenchmarkValid/WithoutCache-10          19246602                62.49 ns/op           64 B/op          2 allocs/op
+BenchmarkInvalid/WithCache-10           263531785                4.562 ns/op           0 B/op          0 allocs/op
+BenchmarkInvalid/WithoutCache-10        20465126                57.06 ns/op           48 B/op          2 allocs/op
+PASS
+ok      github.com/notioncodes/id       6.478s
+```
