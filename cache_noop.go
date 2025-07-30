@@ -4,6 +4,7 @@ package id
 
 import (
 	"container/list"
+	"sync"
 )
 
 // cacheEntry represents a single cache entry with its key for easy removal.
@@ -16,6 +17,7 @@ type cacheEntry struct {
 // It tracks insertion order using a doubly-linked list and removes the oldest entries
 // when the cache exceeds the maximum size.
 type NoOpCache struct {
+	mu       sync.RWMutex
 	cache    map[string]*list.Element
 	order    *list.List
 	maxSize  int64
@@ -42,6 +44,9 @@ func NewNoOpCache() Cache {
 // Returns:
 // - The cached value and true if found, empty string and false otherwise
 func (c *NoOpCache) Get(key string) (string, bool) {
+	c.mu.Lock()
+	defer c.mu.Unlock()
+	
 	if elem, ok := c.cache[key]; ok {
 		// Move to front (most recently used)
 		c.order.MoveToFront(elem)
@@ -57,6 +62,9 @@ func (c *NoOpCache) Get(key string) (string, bool) {
 // - key: The cache key to store
 // - value: The value to associate with the key
 func (c *NoOpCache) Set(key string, value string) {
+	c.mu.Lock()
+	defer c.mu.Unlock()
+	
 	entrySize := int64(len(key) + len(value))
 
 	// If this single entry exceeds max size, don't cache it
